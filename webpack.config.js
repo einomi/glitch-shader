@@ -23,9 +23,13 @@ module.exports = {
         test: /\.(js|jsx)$/,
         use: 'babel-loader',
       },
+      {
+        test: /\.(glsl|vs|fs|vert|frag)$/,
+        type: 'asset/source',
+      },
     ],
   },
-  devtool: IS_PRODUCTION ? undefined : 'eval',
+  devtool: IS_PRODUCTION ? undefined : 'eval-source-map',
   mode: IS_PRODUCTION ? 'production' : 'development',
   optimization: {
     minimize: IS_PRODUCTION,
