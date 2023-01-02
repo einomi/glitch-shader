@@ -1,5 +1,6 @@
 // @ts-nocheck
 import * as THREE from 'three';
+import gsap from 'gsap';
 
 import vertexShader from '../shaders/vertex.glsl';
 import fragmentShader from '../shaders/fragment.glsl';
@@ -17,7 +18,6 @@ const scene = new THREE.Scene();
 const textureLoader = new THREE.TextureLoader();
 let mesh;
 let geometry;
-let time = 0;
 
 const cameraDistance = 600;
 const camera = new THREE.PerspectiveCamera(35, 1, 0.01, 1000);
@@ -58,7 +58,7 @@ function createImage() {
     fragmentShader,
     uniforms: {
       colorMap: { value: texture },
-      uTime: { value: time },
+      uTime: { value: 0 },
       aspectRatio: { value: aspectRatio / IMAGE_ASPECT },
       hover: { value: new THREE.Vector2(0.5, 0.5) },
       hoverState: { value: 0 },
@@ -85,6 +85,21 @@ function createImage() {
 function init() {
   createImage();
   resize();
+  const tl = gsap.timeline({ repeat: -1 });
+  tl.to(mesh.material.uniforms.uTime, {
+    duration: 0.1,
+    value: 1,
+  });
+  tl.to(
+    mesh.material.uniforms.uTime,
+    {
+      duration: 0.05,
+      value: 0,
+      ease: 'power1.easeOut',
+    },
+    0.2
+  );
+  tl.to(mesh.material.uniforms.uTime, { duration: 2, value: 0 });
 }
 init();
 
@@ -109,13 +124,7 @@ function resize() {
 window.addEventListener('resize', resize, false);
 
 function update() {
-  time += 0.001;
-
   requestAnimationFrame(update);
-
-  if (mesh) {
-    mesh.material.uniforms.uTime.value = time;
-  }
 
   renderer.render(scene, camera);
 }
